@@ -1,24 +1,15 @@
 # Chrome Cookie Reader
 
+> **Archived.** Use [pycookiecheat](https://github.com/n8henrie/pycookiecheat) instead — a mature, well-maintained library that does the same thing and more. This project was a learning exercise and personal utility; there's no reason to reinvent what already works well. If pycookiecheat ever becomes unmaintained, I may revisit this.
+
 [한국어](README_ko.md)
 
 A Python module to decrypt and read Chrome cookies on macOS.
 
-## Requirements
-
-- Python 3.10+
-- macOS (uses Keychain)
-- [cryptography](https://pypi.org/project/cryptography/) (installed automatically via pip)
-
 ## Installation
 
 ```bash
-# Recommended: installs CLI to PATH in an isolated venv
-pipx install ~/home/chrome-cookie-reader      # local
-pipx install git+https://github.com/WoojinAhn/chrome-cookie-reader.git  # from GitHub
-
-# Or install as a Python package (for module import)
-pip install -e ~/home/chrome-cookie-reader
+pipx install git+https://github.com/WoojinAhn/chrome-cookie-reader.git
 ```
 
 ## Usage
@@ -26,10 +17,7 @@ pip install -e ~/home/chrome-cookie-reader
 ### CLI
 
 ```bash
-# List all cookies for a domain
 chrome-cookies list github.com
-
-# Get a specific cookie value
 chrome-cookies get github.com session_id
 ```
 
@@ -38,14 +26,9 @@ chrome-cookies get github.com session_id
 ```python
 from chrome_cookies import get_cookie, list_cookies
 
-# Get a single cookie (returns str | None)
 value = get_cookie("github.com", "session_id")
-
-# List all cookies for a domain (returns list of (host_key, name, value) tuples)
 cookies = list_cookies("github.com")
 ```
-
-Host matching is partial — `github.com` matches both `.github.com` and `github.com`.
 
 ## How It Works
 
