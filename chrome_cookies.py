@@ -5,9 +5,9 @@ import hashlib
 import os
 import sqlite3
 import subprocess
+import tempfile
 
 _COOKIE_DB = "~/Library/Application Support/Google/Chrome/Default/Cookies"
-_TMP_DB = "/tmp/_chrome_cookie_reader.db"
 
 
 def _get_aes_key() -> bytes | None:
@@ -39,19 +39,21 @@ def _decrypt_value(enc_value: bytes, aes_key: bytes) -> str | None:
     return text or None
 
 
-def _open_cookie_db() -> sqlite3.Connection | None:
+def _open_cookie_db() -> tuple[sqlite3.Connection, str] | None:
     """Copy Chrome cookie DB to tmp and open it. Caller must call _cleanup_cookie_db()."""
     cookie_db = os.path.expanduser(_COOKIE_DB)
     if not os.path.exists(cookie_db):
         return None
-    subprocess.run(["cp", cookie_db, _TMP_DB], capture_output=True)
-    return sqlite3.connect(_TMP_DB)
+    fd, tmp_path = tempfile.mkstemp(suffix=".db", prefix="chrome_cookie_")
+    os.close(fd)
+    subprocess.run(["cp", cookie_db, tmp_path], capture_output=True)
+    return sqlite3.connect(tmp_path), tmp_path
 
 
-def _cleanup_cookie_db() -> None:
+def _cleanup_cookie_db(tmp_path: str) -> None:
     """Remove the temporary cookie DB copy."""
-    if os.path.exists(_TMP_DB):
-        os.remove(_TMP_DB)
+    if os.path.exists(tmp_path):
+        os.remove(tmp_path)
 
 
 def get_cookie(host: str, name: str) -> str | None:
@@ -64,9 +66,10 @@ def get_cookie(host: str, name: str) -> str | None:
     if aes_key is None:
         return None
 
-    conn = _open_cookie_db()
-    if conn is None:
+    result = _open_cookie_db()
+    if result is None:
         return None
+    conn, tmp_path = result
     try:
         cursor = conn.execute(
             "SELECT encrypted_value FROM cookies WHERE host_key LIKE ? AND name=? LIMIT 1",
@@ -75,7 +78,7 @@ def get_cookie(host: str, name: str) -> str | None:
         row = cursor.fetchone()
         conn.close()
     finally:
-        _cleanup_cookie_db()
+        _cleanup_cookie_db(tmp_path)
 
     if not row or not row[0]:
         return None
@@ -92,9 +95,10 @@ def list_cookies(host: str) -> list[tuple[str, str, str | None]]:
     if aes_key is None:
         return []
 
-    conn = _open_cookie_db()
-    if conn is None:
+    result = _open_cookie_db()
+    if result is None:
         return []
+    conn, tmp_path = result
     try:
         cursor = conn.execute(
             "SELECT host_key, name, encrypted_value FROM cookies WHERE host_key LIKE ?",
@@ -103,7 +107,7 @@ def list_cookies(host: str) -> list[tuple[str, str, str | None]]:
         rows = cursor.fetchall()
         conn.close()
     finally:
-        _cleanup_cookie_db()
+        _cleanup_cookie_db(tmp_path)
 
     results = []
     for host_key, name, enc_value in rows:
