@@ -3,10 +3,13 @@
 import argparse
 import hashlib
 import os
-import sqlite3
 import shutil
+import sqlite3
 import subprocess
 import tempfile
+
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
 
 _COOKIE_DB = "~/Library/Application Support/Google/Chrome/Default/Cookies"
 
@@ -28,15 +31,14 @@ def _decrypt_value(enc_value: bytes, aes_key: bytes) -> str | None:
     if not enc_value or enc_value[:3] != b"v10":
         return None
     payload = enc_value[3:]
-    result = subprocess.run(
-        ["openssl", "enc", "-aes-128-cbc", "-d", "-K", aes_key.hex(), "-iv", "00" * 16, "-nopad"],
-        input=payload, capture_output=True,
-    )
-    if result.returncode != 0:
+    try:
+        cipher = Cipher(algorithms.AES(aes_key), modes.CBC(b"\x00" * 16))
+        decryptor = cipher.decryptor()
+        decrypted = decryptor.update(payload) + decryptor.finalize()
+        unpadder = padding.PKCS7(128).unpadder()
+        text = (unpadder.update(decrypted) + unpadder.finalize()).decode("utf-8", errors="ignore")
+    except Exception:
         return None
-    text = result.stdout.decode("utf-8", errors="ignore")
-    while text and ord(text[-1]) < 32:
-        text = text[:-1]
     return text or None
 
 

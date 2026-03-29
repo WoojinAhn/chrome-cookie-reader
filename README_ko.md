@@ -7,8 +7,16 @@ macOS Chrome 쿠키를 복호화하여 읽는 Python 모듈.
 ## Requirements
 
 - Python 3.10+
-- macOS (Keychain + openssl 사용)
-- 외부 의존성 없음 (stdlib only)
+- macOS (Keychain 사용)
+- [cryptography](https://pypi.org/project/cryptography/) (pip 설치 시 자동 포함)
+
+## Installation
+
+```bash
+pip install .
+```
+
+설치하면 `chrome-cookies` CLI 명령어를 사용할 수 있다.
 
 ## Usage
 
@@ -16,9 +24,13 @@ macOS Chrome 쿠키를 복호화하여 읽는 Python 모듈.
 
 ```bash
 # 도메인의 모든 쿠키 목록 조회
-python3 chrome_cookies.py list github.com
+chrome-cookies list github.com
 
 # 특정 쿠키 값 조회
+chrome-cookies get github.com session_id
+
+# 설치 없이 직접 실행
+python3 chrome_cookies.py list github.com
 python3 chrome_cookies.py get github.com session_id
 ```
 
@@ -40,5 +52,9 @@ cookies = list_cookies("github.com")
 
 1. macOS Keychain에서 Chrome Safe Storage 비밀번호 조회
 2. PBKDF2-SHA1로 AES-128-CBC 키 유도
-3. Chrome Cookies SQLite DB 복사 (lock 회피)
-4. openssl로 쿠키 값 복호화
+3. Chrome Cookies SQLite DB를 임시 파일로 복사 (동시 접근 안전)
+4. AES-128-CBC로 쿠키 값 복호화
+
+## License
+
+MIT

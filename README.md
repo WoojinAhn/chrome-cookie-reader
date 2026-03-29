@@ -7,8 +7,16 @@ A Python module to decrypt and read Chrome cookies on macOS.
 ## Requirements
 
 - Python 3.10+
-- macOS (uses Keychain + openssl)
-- No external dependencies (stdlib only)
+- macOS (uses Keychain)
+- [cryptography](https://pypi.org/project/cryptography/) (installed automatically via pip)
+
+## Installation
+
+```bash
+pip install .
+```
+
+This installs the `chrome-cookies` CLI command.
 
 ## Usage
 
@@ -16,9 +24,13 @@ A Python module to decrypt and read Chrome cookies on macOS.
 
 ```bash
 # List all cookies for a domain
-python3 chrome_cookies.py list github.com
+chrome-cookies list github.com
 
 # Get a specific cookie value
+chrome-cookies get github.com session_id
+
+# Or run directly without installing
+python3 chrome_cookies.py list github.com
 python3 chrome_cookies.py get github.com session_id
 ```
 
@@ -40,5 +52,9 @@ Host matching is partial — `github.com` matches both `.github.com` and `github
 
 1. Retrieve Chrome Safe Storage password from macOS Keychain
 2. Derive AES-128-CBC key via PBKDF2-SHA1
-3. Copy Chrome Cookies SQLite DB to avoid lock contention
-4. Decrypt cookie values with openssl
+3. Copy Chrome Cookies SQLite DB to a temp file (concurrent-safe)
+4. Decrypt cookie values with AES-128-CBC
+
+## License
+
+MIT

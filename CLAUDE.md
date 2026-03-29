@@ -4,12 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-macOS Chrome 쿠키를 복호화하여 읽는 단일 파일 Python 모듈 (`chrome_cookies.py`). 외부 의존성 없이 stdlib만 사용한다.
+macOS Chrome 쿠키를 복호화하여 읽는 단일 파일 Python 모듈 (`chrome_cookies.py`). `cryptography` 라이브러리로 AES 복호화 수행.
 
 ## Requirements
 
 - Python 3.10+ (union type `str | None` 사용)
-- macOS only (Keychain `security` CLI, `openssl` CLI 의존)
+- macOS only (Keychain `security` CLI 의존)
+- `cryptography` 라이브러리 (`pip install -e .`로 자동 설치)
 
 ## Run
 
@@ -34,12 +35,12 @@ No build step, no tests, no linting configured.
 
 **내부 헬퍼:**
 - `_get_aes_key()` — Keychain → PBKDF2 키 유도
-- `_decrypt_value()` — v10 prefix 쿠키 AES-128-CBC 복호화
+- `_decrypt_value()` — v10 prefix 쿠키 AES-128-CBC 복호화 (`cryptography` 라이브러리 사용)
 - `_open_cookie_db()` / `_cleanup_cookie_db()` — DB 복사/정리
 
 **host 매칭:** `LIKE '%host%'` 부분 매칭. `.github.com`과 `github.com`을 구분할 필요 없음.
 
-**암호화 파이프라인:** Keychain 비밀번호 → PBKDF2-SHA1 (salt: `saltysalt`, 1003 iterations) → AES-128-CBC (IV: 16 zero bytes) → PKCS#7 padding 제거. 쿠키 값은 `v10` prefix로 시작.
+**암호화 파이프라인:** Keychain 비밀번호 → PBKDF2-SHA1 (salt: `saltysalt`, 1003 iterations) → AES-128-CBC (IV: 16 zero bytes) → PKCS#7 unpadding (`cryptography` 라이브러리). 쿠키 값은 `v10` prefix로 시작.
 
 ## Docs
 

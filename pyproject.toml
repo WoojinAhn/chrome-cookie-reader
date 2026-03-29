@@ -7,6 +7,7 @@ name = "chrome-cookie-reader"
 version = "0.1.0"
 description = "Read decrypted Chrome cookies on macOS"
 requires-python = ">=3.10"
+dependencies = ["cryptography"]
 license = "MIT"
 authors = [{ name = "WoojinAhn" }]
 
