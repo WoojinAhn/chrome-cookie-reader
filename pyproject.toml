@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "chrome-cookie-reader"
+version = "0.1.0"
+description = "Read decrypted Chrome cookies on macOS"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "WoojinAhn" }]
+
+[project.scripts]
+chrome-cookies = "chrome_cookies:main"
