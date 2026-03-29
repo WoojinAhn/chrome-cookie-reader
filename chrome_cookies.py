@@ -112,7 +112,8 @@ def list_cookies(host: str) -> list[tuple[str, str, str | None]]:
     return results
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """CLI entry point."""
     parser = argparse.ArgumentParser(description="Read Chrome cookies on macOS")
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -139,3 +140,7 @@ if __name__ == "__main__":
             for host_key, name, value in cookies:
                 display = value if value else "(decrypt failed)"
                 print(f"{host_key}\t{name}\t{display}")
+
+
+if __name__ == "__main__":
+    main()
