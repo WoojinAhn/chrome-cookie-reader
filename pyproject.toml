@@ -10,6 +10,15 @@ requires-python = ">=3.10"
 dependencies = ["cryptography"]
 license = "MIT"
 authors = [{ name = "WoojinAhn" }]
+classifiers = [
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+Homepage = "https://github.com/WoojinAhn/chrome-cookie-reader"
+Source = "https://github.com/WoojinAhn/chrome-cookie-reader"
 
 [project.scripts]
 chrome-cookies = "chrome_cookies:main"
