@@ -13,10 +13,13 @@ macOS Chrome 쿠키를 복호화하여 읽는 Python 모듈.
 ## Installation
 
 ```bash
-pip install .
-```
+# 권장: 격리된 venv에 CLI를 PATH에 설치
+pipx install ~/home/chrome-cookie-reader      # 로컬
+pipx install git+https://github.com/WoojinAhn/chrome-cookie-reader.git  # GitHub에서
 
-설치하면 `chrome-cookies` CLI 명령어를 사용할 수 있다.
+# 또는 Python 패키지로 설치 (모듈 import용)
+pip install -e ~/home/chrome-cookie-reader
+```
 
 ## Usage
 
@@ -28,10 +31,6 @@ chrome-cookies list github.com
 
 # 특정 쿠키 값 조회
 chrome-cookies get github.com session_id
-
-# 설치 없이 직접 실행
-python3 chrome_cookies.py list github.com
-python3 chrome_cookies.py get github.com session_id
 ```
 
 ### Module

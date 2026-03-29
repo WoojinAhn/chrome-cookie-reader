@@ -13,10 +13,13 @@ A Python module to decrypt and read Chrome cookies on macOS.
 ## Installation
 
 ```bash
-pip install .
-```
+# Recommended: installs CLI to PATH in an isolated venv
+pipx install ~/home/chrome-cookie-reader      # local
+pipx install git+https://github.com/WoojinAhn/chrome-cookie-reader.git  # from GitHub
 
-This installs the `chrome-cookies` CLI command.
+# Or install as a Python package (for module import)
+pip install -e ~/home/chrome-cookie-reader
+```
 
 ## Usage
 
@@ -28,10 +31,6 @@ chrome-cookies list github.com
 
 # Get a specific cookie value
 chrome-cookies get github.com session_id
-
-# Or run directly without installing
-python3 chrome_cookies.py list github.com
-python3 chrome_cookies.py get github.com session_id
 ```
 
 ### Module
