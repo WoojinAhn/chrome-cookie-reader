@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import os
 import sqlite3
+import shutil
 import subprocess
 import tempfile
 
@@ -46,7 +47,7 @@ def _open_cookie_db() -> tuple[sqlite3.Connection, str] | None:
         return None
     fd, tmp_path = tempfile.mkstemp(suffix=".db", prefix="chrome_cookie_")
     os.close(fd)
-    subprocess.run(["cp", cookie_db, tmp_path], capture_output=True)
+    shutil.copy2(cookie_db, tmp_path)
     return sqlite3.connect(tmp_path), tmp_path
 
 
@@ -76,8 +77,8 @@ def get_cookie(host: str, name: str) -> str | None:
             (f"%{host}%", name),
         )
         row = cursor.fetchone()
-        conn.close()
     finally:
+        conn.close()
         _cleanup_cookie_db(tmp_path)
 
     if not row or not row[0]:
@@ -105,8 +106,8 @@ def list_cookies(host: str) -> list[tuple[str, str, str | None]]:
             (f"%{host}%",),
         )
         rows = cursor.fetchall()
-        conn.close()
     finally:
+        conn.close()
         _cleanup_cookie_db(tmp_path)
 
     results = []
