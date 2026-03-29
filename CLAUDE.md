@@ -10,16 +10,16 @@ macOS Chrome 쿠키를 복호화하여 읽는 단일 파일 Python 모듈 (`chro
 
 - Python 3.10+ (union type `str | None` 사용)
 - macOS only (Keychain `security` CLI 의존)
-- `cryptography` 라이브러리 (`pip install -e .`로 자동 설치)
+- `cryptography` 라이브러리 (`pipx install .` 또는 `pip install -e .`로 설치)
 
 ## Run
 
 ```bash
-# CLI
-python3 chrome_cookies.py list github.com
-python3 chrome_cookies.py get github.com session_id
+# CLI (requires pipx install or pip install -e .)
+chrome-cookies list github.com
+chrome-cookies get github.com session_id
 
-# Module
+# Module (requires pip install -e .)
 python3 -c "from chrome_cookies import get_cookie, list_cookies; print(list_cookies('github.com'))"
 ```
 
